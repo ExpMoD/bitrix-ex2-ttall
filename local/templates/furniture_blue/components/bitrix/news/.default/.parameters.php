@@ -81,4 +81,10 @@ $arTemplateParameters["SET_SPECIALDATE"] = array(
     "DEFAULT" => "",
 );
 
+$arTemplateParameters["IBLOCK_CANONICAL_ID"] = array(
+    "NAME" => GetMessage("IBLOCK_CANONICAL_ID"),
+    "TYPE" => "STRING",
+    "DEFAULT" => "",
+);
+
 ?>
