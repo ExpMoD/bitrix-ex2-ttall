@@ -9,6 +9,7 @@
 
 AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("EventHandlers", "OnBeforeDeactivate"));
 AddEventHandler("main", "OnBeforeEventAdd", array("EventHandlers", "OnBeforeFeedbackAdd"));
+AddEventHandler("main", "OnBuildGlobalMenu", array("EventHandlers", "OnBuildContentManager"));
 class EventHandlers
 {
     function OnBeforeDeactivate($arParams) {
@@ -48,6 +49,39 @@ class EventHandlers
                 "MODULE_ID" => "main",
                 "DESCRIPTION" => "Замена данных в отсылаемом письме – {$arFields['AUTHOR']}",
             ));
+        }
+    }
+
+    function OnBuildContentManager(&$aGlobalMenu, &$aModuleMenu) {
+
+        global $USER;
+
+        if ($USER->IsAdmin())
+            return;
+
+        $groups = $USER->GetUserGroupArray();
+
+        foreach ($groups as $group) {
+            if ($group == 5) {
+                $isContentManager = true;
+                break;
+            }
+        }
+
+        if ($isContentManager) {
+            foreach ($aModuleMenu as $keyM => $valM) {
+                if ($valM['items_id'] == 'menu_iblock_/news') {
+                    $aModuleMenu = [$valM];
+
+                    foreach ($valM['items'] as $item) {
+                        if ($item['items_id'] == 'menu_iblock_/news/1') {
+                            $aModuleMenu[0]['items'] = [$item];
+                        }
+                    }
+                }
+            }
+
+            $aGlobalMenu = ['global_menu_content' => $aGlobalMenu['global_menu_content']];
         }
     }
 }
