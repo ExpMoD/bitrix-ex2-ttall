@@ -8,9 +8,10 @@
 
 
 AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("EventHandlers", "OnBeforeDeactivate"));
+AddEventHandler("main", "OnBeforeEventAdd", array("EventHandlers", "OnBeforeFeedbackAdd"));
 class EventHandlers
 {
-    public function OnBeforeDeactivate($arParams) {
+    function OnBeforeDeactivate($arParams) {
         global $APPLICATION;
         if ($arParams['ACTIVE'] == 'N') {
             if (CModule::IncludeModule('iblock')) {
@@ -28,6 +29,25 @@ class EventHandlers
                     return false;
                 }
             }
+        }
+    }
+
+    function OnBeforeFeedbackAdd(&$event, &$lid, &$arFields) {
+        if ($event == 'FEEDBACK_FORM') {
+            global $USER;
+
+            if ($USER->IsAuthorized()) {
+                $arFields['AUTHOR'] = "Пользователь авторизован: {$USER->GetId()} ({$USER->GetLogin()}) {$USER->GetFullName()}, данные из формы: {$arFields['AUTHOR']}";
+            } else {
+                $arFields['AUTHOR'] = "Пользователь не авторизован, данные из формы: {$arFields['AUTHOR']}";
+            }
+
+            CEventLog::Add(array(
+                "SEVERITY" => "SECURITY",
+                "AUDIT_TYPE_ID" => "Замена данных в отсылаемом письме",
+                "MODULE_ID" => "main",
+                "DESCRIPTION" => "Замена данных в отсылаемом письме – {$arFields['AUTHOR']}",
+            ));
         }
     }
 }
