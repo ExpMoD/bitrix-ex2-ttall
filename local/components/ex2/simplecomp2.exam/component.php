@@ -59,6 +59,7 @@ if ($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]==="N" ? false : $U
         "PROPERTY_PRICE",
         "PROPERTY_ARTNUMBER",
         "IBLOCK_SECTION_ID",
+        "CODE",
         $arParams['PROPERTY_CODE_CLASSIFIER']
     );
     $rsFilter = array(
@@ -66,12 +67,14 @@ if ($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]==="N" ? false : $U
         'ACTIVE' => 'Y',
         $arParams['PROPERTY_CODE_CLASSIFIER'] => $classifierIds
     );
-    $arProducts = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
+    $arProducts = CIBlockElement::GetList(array('name' => 'asc', 'sort' => 'asc'), $rsFilter, false, false, $rsSelect);
 
     while ($product = $arProducts->Fetch()) {
         $firmId = $product[$arParams['PROPERTY_CODE_CLASSIFIER'] . '_VALUE'];
         $detailPage = str_replace("#SECTION_ID#", $product['IBLOCK_SECTION_ID'], $arParams['TEMPLATE_DETAIL_URL']);
         $detailPage = str_replace("#ELEMENT_ID#", $product['ID'], $detailPage);
+        $detailPage = str_replace("#ELEMENT_ID#", $product['ID'], $detailPage);
+        $detailPage = str_replace("#ELEMENT_CODE#", $product['CODE'] . '.php', $detailPage);
 
         $classifierList[$firmId]['ITEMS'][$product['ID']] = array(
             'NAME' => $product['NAME'],

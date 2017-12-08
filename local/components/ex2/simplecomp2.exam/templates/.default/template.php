@@ -23,7 +23,7 @@ $frame = $this->createFrame()->begin('');
                     <?=($ITEM['PRICE']) ? "- {$ITEM['PRICE']}" : ""?>
                     <?=($ITEM['MATERIAL']) ? "- {$ITEM['MATERIAL']}" : ""?>
                     <?=($ITEM['ARTNUMBER']) ? "- {$ITEM['ARTNUMBER']}" : ""?>
-                    <a href="<?=$ITEM['DETAIL_PAGE_URL']?>">Просмотреть</a>
+                    (<?=$ITEM['DETAIL_PAGE_URL']?>)
                 </li>
             <? endforeach; ?>
         </ul></li>
