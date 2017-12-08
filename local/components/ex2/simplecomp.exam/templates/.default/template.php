@@ -11,7 +11,14 @@
 /** @var string $componentPath */
 /** @var CBitrixComponent $component */
 $frame = $this->createFrame()->begin('');
+
+$url = $APPLICATION->GetCurPage() . "?F=Y";
 ?>
+Фильтр: <a href="<?=$url?>"><?=$url?></a>
+    <br>
+    ---
+    <br>
+    <br>
     <b>Каталог:</b>
 <ul>
     <? foreach ($arResult['NEWS'] as $NEWS): ?>

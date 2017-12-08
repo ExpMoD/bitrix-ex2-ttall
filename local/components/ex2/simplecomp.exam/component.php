@@ -30,7 +30,13 @@ if ( !$arParams['IBLOCK_CATALOG'] && ! $arParams['IBLOCK_NEWS'] && ! $arParams['
 
 $catalogByNews = array();
 
-if ($this->StartResultCache()) {
+$timeCache = false;
+
+if (isset($_GET['F'])) {
+    $timeCache = 0;
+}
+
+if ($this->StartResultCache($timeCache)) {
     $rsSelect = array('ID', 'NAME', $arParams['PROPERTY_CODE_NEWS']);
     $rsFilter = array(
         'IBLOCK_ID' => $arParams['IBLOCK_CATALOG'],
@@ -49,6 +55,22 @@ if ($this->StartResultCache()) {
         'IBLOCK_ID' => $arParams['IBLOCK_CATALOG'],
         "ACTIVE" => "Y",
     );
+
+    if (isset($_GET['F'])) {
+        $rsFilter[] = array(
+            "LOGIC" => 'OR',
+            array(
+                'LOGIC' => 'AND',
+                array('<=PROPERTY_PRICE' => 1700),
+                array('PROPERTY_MATERIAL' => 'Дерево, ткань')
+            ),
+            array(
+                'LOGIC' => 'AND',
+                array('<PROPERTY_PRICE' => 1500),
+                array('PROPERTY_MATERIAL' => 'Металл, пластик')
+            )
+        );
+    }
 
     $arProducts = CIBlockElement::GetList(array(), $rsFilter);
 
