@@ -135,6 +135,7 @@ if ($this->StartResultCache($timeCache)) {
     $APPLICATION->SetTitle('В каталоге товаров представлено товаров: ' . count($items));
 
     $arResult['NEWS'] = $catalogByNews;
+    $arResult['ITEMS'] = $items;
 
     if ($APPLICATION->GetShowIncludeAreas()) {
 
