@@ -24,8 +24,12 @@ $url = $APPLICATION->GetCurPage() . "?F=Y";
     <? foreach ($arResult['NEWS'] as $NEWS): ?>
     <li><b><?=$NEWS['NAME']?></b> - <?=$NEWS['ACTIVE_FROM']?> (<?=implode(', ', $NEWS['SECTIONS'])?>)
         <ul>
-            <? foreach ($NEWS['ITEMS'] as $ITEM): ?>
-                <li>
+            <? foreach ($NEWS['ITEMS'] as $kItem => $ITEM): ?>
+                <?
+                $this->AddEditAction($kItem, $ITEM['EDIT_LINK'], CIBlock::GetArrayByID($ITEM["IBLOCK_ID"], "ELEMENT_EDIT"));
+                $this->AddDeleteAction($kItem, $ITEM['DELETE_LINK'], CIBlock::GetArrayByID($ITEM["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
+                ?>
+                <li id="<?=$this->GetEditAreaId($kItem);?>">
                     <?=$ITEM['NAME']?>
                     <?=($ITEM['PRICE']) ? "- {$ITEM['PRICE']}" : ""?>
                     <?=($ITEM['MATERIAL']) ? "- {$ITEM['MATERIAL']}" : ""?>

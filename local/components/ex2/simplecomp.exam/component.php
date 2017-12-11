@@ -83,6 +83,7 @@ if ($this->StartResultCache($timeCache)) {
                 if ($sKey == $fields['IBLOCK_SECTION_ID']) {
                     $catalogByNews[$cKey]['ITEMS'][$fields['ID']] = array(
                         'NAME' => $fields['NAME'],
+                        'IBLOCK_ID' => $fields['IBLOCK_ID'],
                         'MATERIAL' => $properties['MATERIAL']['VALUE'],
                         'PRICE' => $properties['PRICE']['VALUE'],
                         'ARTNUMBER' => $properties['ARTNUMBER']['VALUE'],
@@ -111,9 +112,23 @@ if ($this->StartResultCache($timeCache)) {
 
     $items = array();
 
-    foreach ($catalogByNews as $news) {
+    foreach ($catalogByNews as $nKey => $news) {
         foreach ($news['ITEMS'] as $key => $ITEM) {
-            $items[$key] = $ITEM;
+            if (! isset($items[$key])) {
+                $items[$key] = $ITEM;
+
+                $arButtons = CIBlock::GetPanelButtons(
+                    $fields["IBLOCK_ID"],
+                    $fields["ID"],
+                    0,
+                    array("SECTION_BUTTONS"=>false, "SESSID"=>false)
+                );
+                $editLink = $arButtons["edit"]["edit_element"]["ACTION_URL"];
+                $deleteLink = $arButtons["edit"]["delete_element"]["ACTION_URL"];
+
+                $catalogByNews[$nKey]['ITEMS'][$key]['EDIT_LINK'] = $editLink;
+                $catalogByNews[$nKey]['ITEMS'][$key]['DELETE_LINK'] = $deleteLink;
+            }
         }
     }
 
