@@ -136,6 +136,20 @@ if ($this->StartResultCache($timeCache)) {
 
     $arResult['NEWS'] = $catalogByNews;
 
+    if ($APPLICATION->GetShowIncludeAreas()) {
+
+        $iblock = GetIBlock($arParams['IBLOCK_CATALOG']);
+
+        $url = "/bitrix/admin/iblock_section_admin.php?IBLOCK_ID={$iblock['ID']}&type={$iblock['IBLOCK_TYPE_ID']}";
+
+        $this->AddIncludeAreaIcon(
+            array(
+                'URL'   => $url,
+                'TITLE' => "ИБ в админке",
+                "IN_PARAMS_MENU" => true
+            )
+        );
+    }
 
     $this->IncludeComponentTemplate();
 } else {
