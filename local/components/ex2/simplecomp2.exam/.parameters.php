@@ -21,6 +21,12 @@ $arComponentParameters = array(
             "NAME" => GetMessage("TEMPLATE_DETAIL_URL"),
             "TYPE" => "STRING",
         ),
+        "ELEMENTS_PER_PAGE" => array(
+            "PARENT" => "BASE",
+            "NAME" => GetMessage("ELEMENTS_PER_PAGE"),
+            "TYPE" => "STRING",
+            "DEFAULT" => "2"
+        ),
         "PROPERTY_CODE_CLASSIFIER" => array(
             "PARENT" => "BASE",
             "NAME" => GetMessage("PROPERTY_CODE_CLASSIFIER"),

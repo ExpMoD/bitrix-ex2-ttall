@@ -7,7 +7,7 @@ $APPLICATION->SetTitle("Новости");
 	array(
 		"IBLOCK_TYPE" => "news",
 		"IBLOCK_ID" => "1",
-		"NEWS_COUNT" => "5",
+		"NEWS_COUNT" => "2",
 		"USE_SEARCH" => "N",
 		"USE_RSS" => "Y",
 		"NUM_NEWS" => "20",

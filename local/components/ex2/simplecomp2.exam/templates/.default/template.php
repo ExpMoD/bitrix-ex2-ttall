@@ -14,7 +14,7 @@ $frame = $this->createFrame()->begin('');
 ?>
     <b>Каталог:</b>
 <ul>
-    <? foreach ($arResult as $CLASS): ?>
+    <? foreach ($arResult['CLASSES'] as $key => $CLASS): ?>
     <li><b><?=$CLASS['NAME']?></b>
         <ul>
             <? foreach ($CLASS['ITEMS'] as $ITEM): ?>
@@ -28,8 +28,10 @@ $frame = $this->createFrame()->begin('');
             <? endforeach; ?>
         </ul></li>
     <? endforeach; ?>
-
 </ul>
+
+<?=$arResult['NAV_STRING']?>
+
 <?
 $frame->end();
 ?>

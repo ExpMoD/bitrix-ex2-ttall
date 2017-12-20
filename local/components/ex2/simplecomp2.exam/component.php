@@ -28,9 +28,11 @@ if ( !$arParams['IBLOCK_CATALOG'] && ! $arParams['IBLOCK_NEWS'] && ! $arParams['
     return;
 
 
+$arNavigation = CDBResult::GetNavParams($arNavParams);
+
 $catalogByNews = array();
 
-if ($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]==="N" ? false : $USER->GetGroups()))) {
+if ($this->StartResultCache(false, array($arNavigation["PAGEN"], ($arParams["CACHE_GROUPS"]==="N" ? false : $USER->GetGroups())))) {
     $rsSelect = array(
         "ID",
         "NAME",
@@ -39,18 +41,21 @@ if ($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]==="N" ? false : $U
         "IBLOCK_ID" => $arParams['IBLOCK_CLASSIFIER'],
         "ACTIVE" => 'Y'
     );
-    $arClassifier = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
+    $arNavParams = array(
+        "nPageSize" => $arParams['ELEMENTS_PER_PAGE'],
+        "bShowAll" => false,
+    );
+    $arClassifier = CIBlockElement::GetList(array(), $rsFilter, false, $arNavParams, $rsSelect);
+    $NAV_STRING = $arClassifier->GetPageNavStringEx($navComponentObject, 'Страница', '', 'Y', $this);
 
     $classifierList = array();
     $classifierIds = array();
 
+    //$nav->setRecordCount($arClassifier->SelectedRowsCount());
     while ($classifier = $arClassifier->Fetch()) {
         $classifierList[$classifier['ID']] = ['NAME' => $classifier['NAME']];
         $classifierIds[] = intval($classifier['ID']);
     }
-
-    //
-
 
     $rsSelect = array(
         "ID",
@@ -87,7 +92,9 @@ if ($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]==="N" ? false : $U
 
     $APPLICATION->SetTitle('Разделов: ' . count($classifierList));
 
-    $arResult = $classifierList;
+    $arResult['CLASSES'] = $classifierList;
+
+    $arResult['NAV_STRING'] = $NAV_STRING;
 
     $this->IncludeComponentTemplate();
 } else {
