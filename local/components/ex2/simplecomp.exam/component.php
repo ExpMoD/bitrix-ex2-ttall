@@ -35,8 +35,10 @@ $timeCache = false;
 if (isset($_GET['F'])) {
     $timeCache = 0;
 }
+global $CACHE_MANAGER;
+if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
+    $CACHE_MANAGER->RegisterTag('iblock_id_3');
 
-if ($this->StartResultCache($timeCache)) {
     $rsSelect = array('ID', 'NAME', $arParams['PROPERTY_CODE_NEWS']);
     $rsFilter = array(
         'IBLOCK_ID' => $arParams['IBLOCK_CATALOG'],
@@ -151,8 +153,9 @@ if ($this->StartResultCache($timeCache)) {
             )
         );
     }
-
+    echo time() . "<br>";
     $this->IncludeComponentTemplate();
+    $this->endResultCache();
 } else {
     $this->abortResultCache();
 }
