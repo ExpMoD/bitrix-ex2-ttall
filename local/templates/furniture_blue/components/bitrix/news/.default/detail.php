@@ -38,6 +38,8 @@
 		"IBLOCK_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["news"],
 
 		"IBLOCK_CANONICAL_ID" => $arParams['IBLOCK_CANONICAL_ID'],
+
+        "REPORT_AJAX" => $arParams['REPORT_AJAX'],
 	),
 	$component
 );?>
