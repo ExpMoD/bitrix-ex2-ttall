@@ -17,8 +17,6 @@ global $APPLICATION;
                     BX.ready(function () {
                         var ajaxReportBtn = document.getElementById('ajax-report');
                         ajaxReportBtn.onclick = function () {
-
-
                             BX.ajax.loadJSON(
                                 '<?=$APPLICATION->GetCurPage()?>',
                                 {'TYPE': 'REPORT_AJAX', 'ID': <?=$arResult['ID']?>},
