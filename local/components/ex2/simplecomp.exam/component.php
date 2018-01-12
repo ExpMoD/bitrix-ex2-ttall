@@ -29,6 +29,8 @@ if ( !$arParams['IBLOCK_CATALOG'] && ! $arParams['IBLOCK_NEWS'] && ! $arParams['
 
 
 $catalogByNews = array();
+$sectionsIds = array();
+$newsIds = array();
 
 $timeCache = false;
 
@@ -48,14 +50,27 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
     $sections = CIBlockSection::GetList(array(), $rsFilter, false, $rsSelect);
 
     while ($section = $sections->Fetch()) {
+        $sectionIds[$section['ID']] = $section['ID'];
+
         foreach ($section[$arParams['PROPERTY_CODE_NEWS']] as $item => $value) {
             $catalogByNews[$value]['SECTIONS'][$section['ID']] = $section['NAME'];
+            $newsIds[$value] = $value;
         }
     }
 
+
+    $rsSelect = array(
+        "ID",
+        "NAME",
+        "IBLOCK_SECTION_ID",
+        "PROPERTY_MATERIAL",
+        "PROPERTY_PRICE",
+        "PROPERTY_ARTNUMBER",
+    );
     $rsFilter = array(
         'IBLOCK_ID' => $arParams['IBLOCK_CATALOG'],
         "ACTIVE" => "Y",
+        "IBLOCK_SECTION_ID" => $sectionIds
     );
 
     if (isset($_GET['F'])) {
@@ -74,34 +89,36 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
         );
     }
 
-    $arProducts = CIBlockElement::GetList(array(), $rsFilter);
+    $arProducts = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
 
-    while ($product = $arProducts->GetNextElement()) {
-        $fields = $product->GetFields();
-        $properties = $product->GetProperties();
+    while ($product = $arProducts->Fetch()) {
 
         foreach ($catalogByNews as $cKey => $cVal) {
             foreach ($cVal['SECTIONS'] as $sKey => $sVal) {
-                if ($sKey == $fields['IBLOCK_SECTION_ID']) {
-                    $catalogByNews[$cKey]['ITEMS'][$fields['ID']] = array(
-                        'NAME' => $fields['NAME'],
-                        'IBLOCK_ID' => $fields['IBLOCK_ID'],
-                        'MATERIAL' => $properties['MATERIAL']['VALUE'],
-                        'PRICE' => $properties['PRICE']['VALUE'],
-                        'ARTNUMBER' => $properties['ARTNUMBER']['VALUE'],
+                if ($sKey == $product['IBLOCK_SECTION_ID']) {
+                    $catalogByNews[$cKey]['ITEMS'][$product['ID']] = array(
+                        "NAME" => $product['NAME'],
+                        "MATERIAL" => $product['PROPERTY_MATERIAL_VALUE'],
+                        "PRICE" => $product['PROPERTY_PRICE_VALUE'],
+                        "ARTNUMBER" => $product['PROPERTY_ARTNUMBER_VALUE'],
                     );
+                    break;
                 }
             }
         }
     }
 
-    //
-
+    $rsSelect = array(
+        "ID",
+        "NAME",
+        "ACTIVE_FROM"
+    );
     $rsFilter = array(
-        'IBLOCK_ID' => $arParams['IBLOCK_NEWS']
+        'IBLOCK_ID' => $arParams['IBLOCK_NEWS'],
+        "ID" => $newsIds
     );
 
-    $arNews = CIBlockElement::GetList(array(), $rsFilter);
+    $arNews = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
 
     while ($news = $arNews->Fetch()) {
         foreach ($catalogByNews as $key => $value) {
