@@ -14,7 +14,7 @@ $frame = $this->createFrame()->begin('');
 ?>
     <b>Каталог:</b>
 <ul>
-    <? foreach ($arResult as $id => $user): ?>
+    <? foreach ($arResult['ELEMENTS'] as $id => $user): ?>
     <li>[<?=$id?>] - <?=$user['LOGIN']?>
         <ul>
             <? foreach ($user['NEWS'] as $ITEM): ?>

@@ -17,6 +17,8 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 if (! isset($arParams["CACHE_TIME"]))
     $arParams["CACHE_TIME"] = 180;
 
+if (! $USER->IsAuthorized())
+    return;
 
 
 if (! CModule::IncludeModule("iblock")) {
@@ -75,6 +77,10 @@ if ($this->StartResultCache()) {
     }
 
 
+
+    if (count($userIds) == 0)
+        return;
+
     $rsSelect = array(
         "ID",
         "NAME",
@@ -106,11 +112,13 @@ if ($this->StartResultCache()) {
         }
     }
 
-    $APPLICATION->SetTitle('Новостей ' . count($allNews));
+    $arResult['ELEMENTS'] = $userList;
+    $arResult['COUNT_ELEMENTS'] = count($allNews);
 
-    $arResult = $userList;
-
+    $this->setResultCacheKeys(array('COUNT_ELEMENTS'));
     $this->IncludeComponentTemplate();
 } else {
     $this->abortResultCache();
 }
+
+$APPLICATION->SetTitle('Новостей ' . $arResult['COUNT_ELEMENTS']);
