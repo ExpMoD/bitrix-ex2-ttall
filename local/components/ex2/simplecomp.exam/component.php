@@ -91,8 +91,10 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
 
     $arProducts = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
 
-    while ($product = $arProducts->Fetch()) {
+    $itemsPrice = array();
 
+
+    while ($product = $arProducts->Fetch()) {
         foreach ($catalogByNews as $cKey => $cVal) {
             foreach ($cVal['SECTIONS'] as $sKey => $sVal) {
                 if ($sKey == $product['IBLOCK_SECTION_ID']) {
@@ -106,12 +108,15 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
                 }
             }
         }
+
+        $itemsPrice[] = $product['PROPERTY_PRICE_VALUE'];
     }
 
     $rsSelect = array(
         "ID",
         "NAME",
-        "ACTIVE_FROM"
+        "ACTIVE_FROM",
+        "IBLOCK_ID"
     );
     $rsFilter = array(
         'IBLOCK_ID' => $arParams['IBLOCK_NEWS'],
@@ -121,42 +126,32 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
     $arNews = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect);
 
     while ($news = $arNews->Fetch()) {
-        foreach ($catalogByNews as $key => $value) {
-            if ($news['ID'] == $key) {
-                $catalogByNews[$key]['NAME'] = $news['NAME'];
-                $catalogByNews[$key]['ACTIVE_FROM'] = $news['ACTIVE_FROM'];
-            }
-        }
+        $arButtons = CIBlock::GetPanelButtons(
+            $arParams['IBLOCK_NEWS'],
+            $news["ID"]
+        );
+
+        $catalogByNews[$news['ID']]['NAME'] = $news['NAME'];
+        $catalogByNews[$news['ID']]['ACTIVE_FROM'] = $news['ACTIVE_FROM'];
+        $catalogByNews[$news['ID']]['IBLOCK_ID'] = $news['IBLOCK_ID'];
+        $catalogByNews[$news['ID']]['EDIT_LINK'] = $arButtons["edit"]["edit_element"]["ACTION_URL"];
+        $catalogByNews[$news['ID']]['DELETE_LINK'] = $arButtons["edit"]["delete_element"]["ACTION_URL"];
     }
 
-    $items = array();
-
-    foreach ($catalogByNews as $nKey => $news) {
-        foreach ($news['ITEMS'] as $key => $ITEM) {
-            if (! isset($items[$key])) {
-                $items[$key] = $ITEM;
-
-                $arButtons = CIBlock::GetPanelButtons(
-                    $fields["IBLOCK_ID"],
-                    $fields["ID"],
-                    0,
-                    array("SECTION_BUTTONS"=>false, "SESSID"=>false)
-                );
-                $editLink = $arButtons["edit"]["edit_element"]["ACTION_URL"];
-                $deleteLink = $arButtons["edit"]["delete_element"]["ACTION_URL"];
-
-                $catalogByNews[$nKey]['ITEMS'][$key]['EDIT_LINK'] = $editLink;
-                $catalogByNews[$nKey]['ITEMS'][$key]['DELETE_LINK'] = $deleteLink;
-            }
-        }
-    }
-
-    $APPLICATION->SetTitle('В каталоге товаров представлено товаров: ' . count($items));
 
     $arResult['NEWS'] = $catalogByNews;
-    $arResult['ITEMS'] = $items;
+    $arResult['COUNT_ELEMENTS'] = count($itemsPrice);
+    $arResult['MIN_PRICE'] = min($itemsPrice);
+    $arResult['MAX_PRICE'] = max($itemsPrice);
 
     if ($APPLICATION->GetShowIncludeAreas()) {
+        $arButtons = CIBlock::GetPanelButtons(
+            $arParams['IBLOCK_NEWS'],
+            0
+        );
+
+        $this->addIncludeAreaIcons(CIBlock::GetComponentMenu($APPLICATION->GetPublicShowMode(), $arButtons));
+
 
         $iblock = GetIBlock($arParams['IBLOCK_CATALOG']);
 
@@ -164,15 +159,17 @@ if ($this->StartResultCache($timeCache, false, '/servicesIblock')) {
 
         $this->AddIncludeAreaIcon(
             array(
-                'URL'   => $url,
+                'URL' => $url,
                 'TITLE' => "ИБ в админке",
                 "IN_PARAMS_MENU" => true
             )
         );
     }
-    echo time() . "<br>";
+
+    $this->setResultCacheKeys(array('COUNT_ELEMENTS', 'MIN_PRICE', 'MAX_PRICE'));
     $this->IncludeComponentTemplate();
-    $this->endResultCache();
 } else {
     $this->abortResultCache();
 }
+
+$APPLICATION->SetTitle('В каталоге товаров представлено товаров: ' . $arResult['COUNT_ELEMENTS']);

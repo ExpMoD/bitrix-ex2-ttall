@@ -13,7 +13,11 @@
 $frame = $this->createFrame()->begin('');
 
 $url = $APPLICATION->GetCurPage() . "?F=Y";
+echo time() . "<br>";
 ?>
+
+
+
 Фильтр: <a href="<?=$url?>"><?=$url?></a>
     <br>
     ---
@@ -21,15 +25,16 @@ $url = $APPLICATION->GetCurPage() . "?F=Y";
     <br>
     <b>Каталог:</b>
 <ul>
-    <? foreach ($arResult['NEWS'] as $NEWS): ?>
-    <li><b><?=$NEWS['NAME']?></b> - <?=$NEWS['ACTIVE_FROM']?> (<?=implode(', ', $NEWS['SECTIONS'])?>)
+    <? foreach ($arResult['NEWS'] as $kNews => $NEWS): ?>
+        <?
+        $this->AddEditAction($kNews, $NEWS['EDIT_LINK'], CIBlock::GetArrayByID($NEWS["IBLOCK_ID"], "ELEMENT_EDIT"));
+        $this->AddDeleteAction($kNews, $NEWS['DELETE_LINK'], CIBlock::GetArrayByID($NEWS["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
+        ?>
+    <li>
+        <span id="<?=$this->GetEditAreaId($kNews);?>"><b><?=$NEWS['NAME']?></b> - <?=$NEWS['ACTIVE_FROM']?></span> (<?=implode(', ', $NEWS['SECTIONS'])?>)
         <ul>
             <? foreach ($NEWS['ITEMS'] as $kItem => $ITEM): ?>
-                <?
-                $this->AddEditAction($kItem, $ITEM['EDIT_LINK'], CIBlock::GetArrayByID($ITEM["IBLOCK_ID"], "ELEMENT_EDIT"));
-                $this->AddDeleteAction($kItem, $ITEM['DELETE_LINK'], CIBlock::GetArrayByID($ITEM["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
-                ?>
-                <li id="<?=$this->GetEditAreaId($kItem);?>">
+                <li>
                     <?=$ITEM['NAME']?>
                     <?=($ITEM['PRICE']) ? "- {$ITEM['PRICE']}" : ""?>
                     <?=($ITEM['MATERIAL']) ? "- {$ITEM['MATERIAL']}" : ""?>
