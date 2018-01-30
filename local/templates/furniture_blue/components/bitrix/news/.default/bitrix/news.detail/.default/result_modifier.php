@@ -1,19 +1,19 @@
 <?php
 
-if ($arParams['IBLOCK_CANONICAL_ID'] && CModule::IncludeModule('iblock')) {
+if (isset($arParams['IBLOCK_ID_CANONICAL']) && CModule::IncludeModule('iblock')) {
     $rsSelect = array(
-        'NAME'
+        "NAME"
     );
-
     $rsFilter = array(
-        "IBLOCK_ID" => $arParams['IBLOCK_CANONICAL_ID'],
+        "IBLOCK_ID" => $arParams['IBLOCK_ID_CANONICAL'],
         "PROPERTY_NEWS" => $arResult['ID']
     );
+    $rsCanonical = CIBlockElement::GetList(array(), $rsFilter, false, false, $rsSelect)->Fetch();
 
-    $canonical = CIBlockElement::GetList(array(), $rsFilter, false ,false, $rsSelect)->Fetch();
-
-    if ($canonical) {
-        $arResult['CANONICAL_LINK'] = $canonical['NAME'];
-        $this->__component->SetResultCacheKeys(array('CANONICAL_LINK'));
+    if (isset($rsCanonical)) {
+        $arResult['CANONICAL'] = $rsCanonical['NAME'];
+        $this->__component->SetResultCacheKeys(array('CANONICAL'));
     }
 }
+
+

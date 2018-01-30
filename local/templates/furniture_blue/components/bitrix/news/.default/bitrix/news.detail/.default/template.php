@@ -10,39 +10,14 @@ global $APPLICATION;
         <div class="news-date"><?=$arResult["DISPLAY_ACTIVE_FROM"]?></div>
     <?endif;?>
     <?if($arParams["DISPLAY_NAME"]!="N" && $arResult["NAME"]):?>
-        <h3><?=$arResult["NAME"]?>
-        <? if ($arParams['REPORT_AJAX'] == 'Y'): ?>
-            <script>
-                (function (BX) {
-                    BX.ready(function () {
-                        var ajaxReportBtn = document.getElementById('ajax-report');
-                        ajaxReportBtn.onclick = function () {
-                            BX.ajax.loadJSON(
-                                '<?=$APPLICATION->GetCurPage()?>',
-                                {'TYPE': 'REPORT_AJAX', 'ID': <?=$arResult['ID']?>},
-                                function (data){
-                                    var textElem = document.getElementById('ajax-report-text');
-                                    textElem.innerText = "Ваше мнение учтено, №" + data['ID'];
-                                },
-                                function (data){
-                                    var textElem = document.getElementById('ajax-report-text');
-                                    textElem.innerText = "Ошибка!";
-                                }
-                            );
-                        };
-                    });
-                })(BX);
-            </script>
-            <span style="font-size: 13px;">
-                <a id="ajax-report" href="#" onclick="">Пожаловаться!</a>
-                <span id="ajax-report-text"></span>
-            </span>
-        <? else: ?>
-            <span style="font-size: 13px;">
-                <a href="<?=$APPLICATION->GetCurPage()?>?TYPE=REPORT_GET&ID=<?=$arResult['ID']?>">Пожаловаться!</a>
-                <span id="ajax-report-text"></span>
-            </span>
-        <? endif; ?>
+        <h3>
+            <?=$arResult["NAME"]?>
+            <? if ($arParams['AJAX_REPORT'] == "Y"): ?>
+                <a id="ajax-report" data-newsid="<?=$arResult['ID']?>" href="<?=$APPLICATION->GetCurPage()?>" style="font-size: 12px;">пожаловаться!</a>
+            <? else: ?>
+                <a href="<?=$APPLICATION->GetCurPage()?>?TYPE=GET_REPORT&ID=<?=$arResult['ID']?>" style="font-size: 12px;">пожаловаться!</a>
+            <? endif; ?>
+            <span id="ajax-report-text" style="font-size: 12px;"></span>
         </h3>
     <?endif;?>
     <div class="news-detail">

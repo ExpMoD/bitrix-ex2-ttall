@@ -88,7 +88,7 @@ $arTemplateParameters["IBLOCK_CANONICAL_ID"] = array(
 );
 
 
-$arTemplateParameters["REPORT_AJAX"] = array(
+$arTemplateParameters["AJAX_REPORT"] = array(
     "NAME" => GetMessage("REPORT_AJAX"),
     "TYPE" => "CHECKBOX",
     "DEFAULT" => "N",

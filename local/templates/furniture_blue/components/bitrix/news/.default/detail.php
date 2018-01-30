@@ -39,7 +39,7 @@
 
 		"IBLOCK_CANONICAL_ID" => $arParams['IBLOCK_CANONICAL_ID'],
 
-        "REPORT_AJAX" => $arParams['REPORT_AJAX'],
+        "AJAX_REPORT" => $arParams['AJAX_REPORT'],
 	),
 	$component
 );?>
