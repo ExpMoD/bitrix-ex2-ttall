@@ -23,50 +23,45 @@ define("LOG_FILENAME", $_SERVER["DOCUMENT_ROOT"]."/log.txt");
 
 function CheckUserCount()
 {
-    $date = new DateTime();
-    $date = \Bitrix\Main\Type\DateTime::createFromTimestamp($date->getTimestamp());
 
-    $lastDate = COption::GetOptionString("main", 'last_date_agent_checkUserCount');
+    $optionName = "LAST_DATE_CCRU";
 
+    global $APPLICATION;
 
-    if ($lastDate) {
-        $arFilter = array('>=DATE_REGISTER' => $lastDate);
-    } else {
-        $arFilter = array();
+    $lastDate = COption::GetOptionString('main', $optionName);
+    $nowDate = time();
+    $rsFilter = array();
+
+    if ($lastDate)
+        $rsFilter[">DATE_REGISTER"] = \Bitrix\Main\Type\Date::createFromTimestamp($lastDate);
+
+    $rsUsers = CUser::GetList($by = 'DATE_REGISTER', $order = "ASC", $rsFilter, array('FIELDS' => array('ID', 'DATE_REGISTER')));
+
+    $count = $rsUsers->SelectedRowsCount();
+
+    if ($count > 0) {
+        if (! $lastDate)
+            $lastDate = strtotime($rsUsers->Fetch()['DATE_REGISTER']);
+
+        $countDays = ceil(abs($lastDate - $nowDate) / (3600 * 24));
+
+        $rsAdmins = CUser::GetList($by = 'ID', $order = 'ASC', array('GROUPS_ID' => 1), array('FIELDS' => array('EMAIL')));
+
+        $adminEmails = array();
+
+        while ($arAdmin = $rsAdmins->Fetch())
+            $adminEmails[] = $arAdmin['EMAIL'];
+
+        CEvent::Send('COUNT_REGISTERED_USERS', 's1',
+            array(
+                'EMAIL_TO' => implode(',', $adminEmails),
+                'COUNT_USERS' => $count,
+                'COUNT_DAYS' => $countDays,
+            ), 'Y', 29
+        );
+
+        COption::SetOptionString("main", $optionName, $nowDate);
     }
-
-    $rsUsers = CUser::GetList($by = "DATE_REGISTER", $order = "ASC", $arFilter);
-
-    $arUsers = array();
-
-    while ($user = $rsUsers->Fetch()) {
-        $arUsers[] = $user;
-    }
-
-    if (! $lastDate) {
-        $lastDate = $arUsers[0]['DATE_REGISTER'];
-    }
-
-    $difference = intval(abs(
-        strtotime($lastDate) - strtotime($date->toString())
-    ));
-
-    $days = round($difference / (3600 * 24));
-    $countUsers = count($arUsers);
-
-    $rsAdmins = CUser::GetList($by = "ID", $order = "ASC", array('GROUPS_ID' => 1));
-
-
-    while ($admin = $rsAdmins->Fetch()) {
-        CEvent::Send('COUNT_REGISTERED_USERS', 's1', array(
-            'EMAIL_TO' => $admin['EMAIL'],
-            'COUNT_USERS' => $countUsers,
-            'COUNT_DAYS' => $days,
-        ), "Y", "29");
-
-    }
-
-    COption::SetOptionString("main", 'last_date_agent_checkUserCount', $date->toString());
 
     return "CheckUserCount();";
 }
