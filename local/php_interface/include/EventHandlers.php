@@ -19,7 +19,7 @@ class EventHandlers
                 $element = CIblockElement::GetList(
                     array(),
                     array(
-                        'IBLOCK_ID' => 2,
+                        'IBLOCK_ID' => IBLOCK_ID_PRODUCT,
                         'ID' => $arParams['ID'],
                         '>SHOW_COUNTER' => 2
                     )

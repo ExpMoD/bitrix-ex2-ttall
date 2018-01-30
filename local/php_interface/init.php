@@ -6,6 +6,10 @@
  * Time: 10:56
  */
 
+define('IBLOCK_ID_PRODUCT', 2);
+
+
+
 if (file_exists($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/include/EventHandlers.php"))
     require_once($_SERVER['DOCUMENT_ROOT'] . "/local/php_interface/include/EventHandlers.php");
 
