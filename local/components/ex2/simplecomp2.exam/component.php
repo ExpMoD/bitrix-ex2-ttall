@@ -39,7 +39,8 @@ if ($this->StartResultCache(false, array($arNavigation["PAGEN"], ($arParams["CAC
     );
     $rsFilter = array(
         "IBLOCK_ID" => $arParams['IBLOCK_CLASSIFIER'],
-        "ACTIVE" => 'Y'
+        "ACTIVE" => 'Y',
+        "CHECK_PERMISSIONS" => 'Y'
     );
     $arNavParams = array(
         "nPageSize" => $arParams['ELEMENTS_PER_PAGE'],
@@ -51,7 +52,6 @@ if ($this->StartResultCache(false, array($arNavigation["PAGEN"], ($arParams["CAC
     $classifierList = array();
     $classifierIds = array();
 
-    //$nav->setRecordCount($arClassifier->SelectedRowsCount());
     while ($classifier = $arClassifier->Fetch()) {
         $classifierList[$classifier['ID']] = ['NAME' => $classifier['NAME']];
         $classifierIds[] = intval($classifier['ID']);
@@ -70,7 +70,8 @@ if ($this->StartResultCache(false, array($arNavigation["PAGEN"], ($arParams["CAC
     $rsFilter = array(
         'IBLOCK_ID' => $arParams['IBLOCK_CATALOG'],
         'ACTIVE' => 'Y',
-        $arParams['PROPERTY_CODE_CLASSIFIER'] => $classifierIds
+        $arParams['PROPERTY_CODE_CLASSIFIER'] => $classifierIds,
+        "CHECK_PERMISSIONS" => 'Y'
     );
     $arProducts = CIBlockElement::GetList(array('name' => 'asc', 'sort' => 'asc'), $rsFilter, false, false, $rsSelect);
 
@@ -90,13 +91,19 @@ if ($this->StartResultCache(false, array($arNavigation["PAGEN"], ($arParams["CAC
         );
     }
 
-    $APPLICATION->SetTitle('Разделов: ' . count($classifierList));
-
     $arResult['CLASSES'] = $classifierList;
+    $arResult['COUNT_ELEMENT'] = count($classifierList);
 
     $arResult['NAV_STRING'] = $NAV_STRING;
+
+    $this->setResultCacheKeys(array(
+        'COUNT_ELEMENT'
+    ));
 
     $this->IncludeComponentTemplate();
 } else {
     $this->abortResultCache();
 }
+
+
+$APPLICATION->SetTitle('Разделов: ' . $arResult['COUNT_ELEMENT']);
