@@ -7,7 +7,7 @@ if (CModule::IncludeModule('iblock')) {
     $result = CIBlockElement::GetList(
         array(),
         array(
-            'IBLOCK_ID' => 6,
+            'IBLOCK_ID' => IBLOCK_ID_METATAGS,
             'NAME' => $APPLICATION->GetCurPage()
         ),
         false,

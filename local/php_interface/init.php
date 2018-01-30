@@ -7,6 +7,7 @@
  */
 
 define('IBLOCK_ID_PRODUCT', 2);
+define('IBLOCK_ID_METATAGS', 6);
 
 
 
