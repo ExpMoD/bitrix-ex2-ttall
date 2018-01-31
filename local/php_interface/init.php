@@ -33,7 +33,7 @@ function CheckUserCount()
     $rsFilter = array();
 
     if ($lastDate)
-        $rsFilter[">DATE_REGISTER"] = \Bitrix\Main\Type\Date::createFromTimestamp($lastDate);
+        $rsFilter["DATE_REGISTER_1"] = \Bitrix\Main\Type\Date::createFromTimestamp($lastDate);
 
     $rsUsers = CUser::GetList($by = 'DATE_REGISTER', $order = "ASC", $rsFilter, array('FIELDS' => array('ID', 'DATE_REGISTER')));
 
